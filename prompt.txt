@@ -1,0 +1,524 @@
+🧠 PROJECT NAME:
+
+GYMFLOW – Multi-Tenant Gym Ecommerce & Membership SaaS
+
+🎯 OBJECTIVE
+
+Build a complete production-ready SaaS platform that allows:
+
+Super Admin to manage gyms (SaaS billing model)
+
+Gym Admin to manage members, products, classes
+
+Members to subscribe, buy products, book classes
+
+Full Stripe payment integration
+
+Real webhook handling
+
+Order tracking system
+
+Subscription lifecycle management
+
+This must be fully functional, not a UI mockup.
+
+🏗️ FULL TECH STACK (MANDATORY)
+
+Frontend:
+
+React (Vite)
+
+TailwindCSS
+
+Redux Toolkit
+
+React Router
+
+Axios
+
+Form validation (React Hook Form + Zod)
+
+Backend:
+
+Node.js
+
+Express
+
+MVC architecture
+
+REST API
+
+Database:
+
+MongoDB Atlas
+
+Proper indexing
+
+Authentication:
+
+JWT (Access + Refresh token)
+
+Role-based middleware
+
+Bcrypt password hashing
+
+Email verification
+
+Password reset
+
+Payments:
+
+Stripe
+
+Payment Intents (products)
+
+Subscriptions (memberships)
+
+Webhook verification
+
+Refund handling
+
+Security:
+
+Helmet
+
+Rate limiting
+
+CORS protection
+
+Input validation
+
+Stripe signature verification
+
+Environment variables (.env)
+
+Deployment-ready:
+
+Vercel (frontend)
+
+Render/Railway (backend)
+
+MongoDB Atlas
+
+👥 ROLE SYSTEM (STRICT PERMISSION CONTROL)
+
+Roles:
+
+1️⃣ SuperAdmin
+2️⃣ GymAdmin
+3️⃣ Member
+
+Implement role-based route protection on both frontend and backend.
+
+👑 SUPER ADMIN SYSTEM
+
+Super Admin can:
+
+Create Gym Admin accounts
+
+Approve / Suspend gyms
+
+Set SaaS pricing plans
+
+View platform revenue
+
+View all subscriptions
+
+Manage global coupons
+
+View all transactions
+
+Refund payments
+
+View SaaS analytics dashboard
+
+SaaS billing:
+Gym Admin must pay monthly subscription to use the platform.
+
+Implement Stripe subscription for Gym Admin billing.
+
+🏋️ GYM ADMIN SYSTEM
+
+Each Gym Admin manages only their gym (multi-tenant isolation).
+
+1️⃣ Member Management
+
+View members
+
+Suspend member
+
+Upgrade/downgrade member plan
+
+View payment history
+
+2️⃣ Membership Plans
+
+Create membership plans
+
+Monthly
+
+Yearly
+
+Set price
+
+Define features
+
+View active subscribers
+
+3️⃣ Product Management (Ecommerce)
+
+Add product
+
+Edit product
+
+Delete product
+
+Upload images
+
+Manage stock
+
+Apply discounts
+
+Product schema must include:
+
+gymId
+
+name
+
+price
+
+SKU
+
+stock
+
+category
+
+images
+
+description
+
+4️⃣ Order Management
+
+View orders
+
+Update order status:
+
+Pending
+
+Confirmed
+
+Shipped
+
+Delivered
+
+Cancelled
+
+Add tracking number
+
+Notify user via email
+
+5️⃣ Class Management System
+
+Create class
+
+Trainer
+
+Date
+
+Time
+
+Max seats
+
+Price (free or paid)
+
+View bookings
+
+Approve / reject booking
+
+Track attendance
+
+Seats must decrease automatically after confirmed booking.
+
+👤 MEMBER SYSTEM
+
+After login:
+
+Dashboard
+
+Membership status
+
+Next billing date
+
+Orders summary
+
+Upcoming classes
+
+Notifications
+
+Subscription Flow
+
+Member:
+
+Select membership plan
+
+Pay via Stripe subscription
+
+Auto-renew enabled
+
+Cancel anytime
+
+Upgrade/downgrade plan
+
+Webhook must update:
+
+subscriptionStatus
+
+renewalDate
+
+payment status
+
+Store
+
+Member can:
+
+Browse products (filtered by gym)
+
+Add to cart
+
+Apply coupon
+
+Checkout
+
+Checkout must:
+
+Create Stripe PaymentIntent
+
+Confirm payment
+
+Store order
+
+Reduce stock
+
+Send confirmation email
+
+Order Tracking
+
+Member can:
+
+View order status
+
+Track shipment
+
+View invoice
+
+Download invoice PDF
+
+Order statuses must update dynamically.
+
+Class Booking
+
+Member:
+
+View available classes
+
+Request booking
+
+Pay if required
+
+See booking status
+
+Cancel booking
+
+Paid class must use Stripe PaymentIntent.
+
+💳 PAYMENT SYSTEM (STRICT IMPLEMENTATION)
+Product Purchase:
+
+Create PaymentIntent
+
+Confirm payment
+
+Save order in DB
+
+Update stock
+
+Trigger email
+
+Membership Subscription:
+
+Create Stripe Subscription
+
+Store stripeSubscriptionId
+
+Listen to webhooks:
+
+invoice.paid
+
+invoice.payment_failed
+
+customer.subscription.deleted
+
+Update database automatically
+
+Gym SaaS Subscription:
+
+Stripe recurring billing for Gym Admin
+
+Disable gym access if payment fails
+
+📊 DATABASE COLLECTIONS
+
+Users:
+
+name
+
+email
+
+password
+
+role
+
+gymId
+
+subscriptionStatus
+
+stripeCustomerId
+
+Gyms:
+
+name
+
+ownerId
+
+status
+
+plan
+
+stripeSubscriptionId
+
+Products:
+
+gymId
+
+name
+
+price
+
+stock
+
+SKU
+
+Orders:
+
+userId
+
+gymId
+
+products[]
+
+totalAmount
+
+paymentIntentId
+
+status
+
+trackingNumber
+
+MembershipPlans:
+
+gymId
+
+name
+
+price
+
+interval
+
+Subscriptions:
+
+userId
+
+stripeSubscriptionId
+
+plan
+
+status
+
+renewalDate
+
+Classes:
+
+gymId
+
+trainer
+
+date
+
+maxSeats
+
+price
+
+Bookings:
+
+userId
+
+classId
+
+paymentStatus
+
+bookingStatus
+
+Coupons:
+
+code
+
+discount
+
+expiry
+
+usageLimit
+
+🔐 SECURITY REQUIREMENTS
+
+Role-based middleware
+
+Protected routes
+
+Rate limiting
+
+Validate all inputs
+
+Stripe webhook signature verification
+
+Proper error handling
+
+Centralized logging
+
+📈 PERFORMANCE & SCALABILITY
+
+Multi-tenant isolation
+
+Gym data separated by gymId
+
+Indexed queries
+
+Pagination for lists
+
+Lazy loading frontend
+
+Optimized API calls
+
+🚀 FINAL GOAL
+
+This system must behave like:
+
+Shopify + Stripe + MindBody combined
+Real payment flows
+Real subscription management
+Multi-role SaaS
+Fully production deployable
+Investor-ready product
+
+No fake data.
+No UI-only logic.
+Real backend integration.

@@ -1,0 +1,226 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Defaulting to MongoDB for SaaS scalability as requested, although Postgres works perfectly too.
+// If the user hasn't provided a Postgres URI, we'll design a generic schema that works well with Postgres (since we don't have MongoDB replica set setup locally). Let's stick to Postgres/SQLite locally to ensure it builds, and they can swap the provider later. Let's use PostgreSQL.
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// --- NextAuth Core Models ---
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// --- TITAN X SaaS Models ---
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // For local bcrypt auth
+
+  role          String    @default("MEMBER")
+  gymBranchId   String?   // Null for superadmins, set for others
+  branch        GymBranch? @relation(fields: [gymBranchId], references: [id])
+
+  // Stripe & SaaS
+  stripeCustomerId   String? @unique
+  subscriptionStatus String? // e.g., 'active', 'trialing', 'canceled'
+  membershipPlan     String? // e.g., 'FOUNDATION', 'APEX', 'ELITE'
+
+  accounts      Account[]
+  sessions      Session[]
+  orders        Order[]
+  subscriptions Subscription[]
+  bookings      Booking[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model GymBranch {
+  id          String   @id @default(cuid())
+  name        String   // e.g., "Titan X - Dubai Downtown"
+  location    String?
+  contactInfo String?
+  
+  stripeSubscriptionId String? @unique
+  saasStatus           String  @default("active") // active, past_due, canceled
+  
+  users           User[]
+  membershipPlans MembershipPlan[]
+  classes         Class[]
+  products        Product[]
+  orders          Order[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  category    String   // e.g., "Equipment", "Apparel", "Supplements"
+  sku         String   @unique
+  description String?
+  price       Float    // Decimal price
+  inventory   Int      @default(0)
+  imageUrl    String?  // Single image URL for SQLite compatibility
+  isActive    Boolean  @default(true)
+  
+  gymBranchId String?
+  branch      GymBranch? @relation(fields: [gymBranchId], references: [id], onDelete: Cascade)
+
+  orderItems  OrderItem[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  gymBranchId     String?
+  branch          GymBranch? @relation(fields: [gymBranchId], references: [id], onDelete: Cascade)
+  
+  totalAmount     Float
+  status          String   @default("PENDING") // PENDING, PAID, SHIPPED, DELIVERED, CANCELLED
+  paymentIntentId String?  @unique
+  trackingNumber  String?
+
+  items           OrderItem[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  
+  quantity  Int
+  priceAt   Float   // Price captured at the time of purchase
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  stripeSubscriptionId String   @unique
+  plan                 String   // Plan ID from Stripe
+  status               String
+  currentPeriodEnd     DateTime
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Coupon {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  discountPct Float    // e.g., 20.0 for 20%
+  expiry      DateTime?
+  usageLimit  Int?
+  timesUsed   Int      @default(0)
+
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model MembershipPlan {
+  id            String   @id @default(cuid())
+  gymBranchId   String
+  branch        GymBranch @relation(fields: [gymBranchId], references: [id], onDelete: Cascade)
+  
+  name          String
+  price         Float
+  interval      String   // 'month' or 'year'
+  features      String?  // Comma-separated or JSON
+  stripePriceId String?  @unique
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Class {
+  id          String   @id @default(cuid())
+  gymBranchId String
+  branch      GymBranch @relation(fields: [gymBranchId], references: [id], onDelete: Cascade)
+  
+  name        String
+  trainer     String
+  date        DateTime
+  maxSeats    Int
+  price       Float    // 0 for free
+  isActive    Boolean  @default(true)
+  
+  bookings    Booking[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Booking {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  classId         String
+  scheduledClass  Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  
+  status          String   @default("CONFIRMED") // CONFIRMED, CANCELLED
+  paymentStatus   String   @default("PENDING") // PENDING, PAID, FREE
+  paymentIntentId String?  @unique
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, classId])
+}

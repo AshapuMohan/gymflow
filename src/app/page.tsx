@@ -1,65 +1,72 @@
-import Image from "next/image";
+import Link from 'next/link';
+import TitanHero from '@/components/titan/TitanHero';
+import TitanPhilosophy from '@/components/titan/TitanPhilosophy';
+import TitanStore from '@/components/titan/TitanStore';
+import TitanPricing from '@/components/titan/TitanPricing';
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="bg-background text-foreground min-h-screen selection:bg-accent-gold/30">
+
+      {/* Matte Stealth Navbar */}
+      <nav className="fixed top-0 w-full z-50 border-b border-white/[0.03] bg-background/80 backdrop-blur-2xl">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Simple geometric logo placeholder */}
+            <div className="flex items-center justify-center w-8 h-8 bg-surface rounded-sm border border-white/[0.08]">
+              <div className="w-3 h-3 bg-accent-gold transform rotate-45" />
+            </div>
+            <span className="text-xl font-display tracking-widest uppercase text-white">TITAN X</span>
+          </div>
+
+          <div className="hidden md:flex items-center gap-10 text-xs font-sans font-medium uppercase tracking-[0.2em] text-white/50">
+            <a href="#protocol" className="hover:text-accent-gold transition-colors">The Protocol</a>
+            <a href="#performance" className="hover:text-accent-gold transition-colors">Arsenal</a>
+            <a href="#elite" className="hover:text-white transition-colors">Elite Status</a>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <Link href="/login" className="text-xs font-sans font-medium uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors">
+              Access
+            </Link>
+            <Link href="/register" className="bg-white text-background px-6 py-2 rounded-full text-xs font-bold uppercase tracking-[0.1em] hover:bg-neutral-200 transition-all active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+              Initiate
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </nav>
+
+      <main>
+        {/* Cinematic 3D Section */}
+        <TitanHero />
+
+        {/* Storytelling Phase */}
+        <TitanPhilosophy />
+
+        {/* E-Commerce Global Store Phase */}
+        <TitanStore />
+
+        {/* Subscription Engine Layer */}
+        <div id="elite">
+          <TitanPricing />
         </div>
       </main>
+
+      {/* Footer Branding */}
+      <footer className="py-24 border-t border-white/[0.03] text-center bg-background">
+        <div className="flex justify-center gap-8 mb-12 text-white/40 text-[10px] font-medium uppercase tracking-[0.2em]">
+          <a href="#" className="hover:text-white transition-colors">Privacy</a>
+          <a href="#" className="hover:text-white transition-colors">Terms</a>
+          <a href="#" className="hover:text-white transition-colors">Manifesto</a>
+        </div>
+        <div className="flex items-center justify-center mb-6">
+          <div className="w-4 h-4 bg-accent-gold transform rotate-45 opacity-20" />
+        </div>
+        <p className="text-white/20 text-[10px] font-sans uppercase tracking-[0.3em]">
+          TITAN X PERFORMANCE © {new Date().getFullYear()}
+        </p>
+      </footer>
+
     </div>
   );
 }
