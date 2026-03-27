@@ -3,6 +3,7 @@ import StoreProductCard from "@/components/store/StoreProductCard";
 import CartDrawer from "@/components/store/CartDrawer";
 import CheckoutAutoTrigger from "@/components/store/CheckoutAutoTrigger";
 import { ShoppingBag } from "lucide-react";
+import { Suspense } from "react";
 
 const CATEGORIES = ["All", "Equipment", "Apparel", "Supplements", "Accessories"];
 
@@ -106,7 +107,9 @@ export default async function StorePage({ searchParams }: StorePageProps) {
 
             {/* Cart Drawer and checkout trigger - always mounted */}
             <CartDrawer />
-            <CheckoutAutoTrigger />
+            <Suspense fallback={null}>
+                <CheckoutAutoTrigger />
+            </Suspense>
         </div>
     );
 }

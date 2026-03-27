@@ -3,6 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { LogOut, LayoutDashboard, Settings, ShoppingBag, CreditCard } from "lucide-react";
+import DashboardSessionProvider from "./dashboard-session-provider";
 
 export default async function DashboardLayout({
     children,
@@ -18,6 +19,7 @@ export default async function DashboardLayout({
     const role = session.user?.role || "MEMBER";
 
     return (
+        <DashboardSessionProvider>
         <div className="min-h-screen bg-background flex">
             {/* Sidebar Overlay for Mobile could go here */}
 
@@ -94,6 +96,7 @@ export default async function DashboardLayout({
             </main>
 
         </div>
+        </DashboardSessionProvider>
     );
 }
 
