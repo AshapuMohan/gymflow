@@ -297,4 +297,5 @@ Open [http://localhost:3000](http://localhost:3000)
 | GymAdmin | branch@titanx.com | (see prisma/password.txt) |
 | Member | member@titanx.com | (see prisma/password.txt) |
 #   g y m f l o w  
+ #   g y m f l o w  
  
